@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import * as Google from 'expo-google-app-auth';
 
 import {
@@ -71,14 +71,19 @@ export const AuthProvider = ({ children }) => {
     .finally(() => setLoading(false));
   }
 
-  return (
-    <AuthContext.Provider value={{
-      user: user,
+  const memoedValue = useMemo(
+    () => ({
+      user,
       loading,
       error,
       signInWithGoogle,
       logout,
-    }}
+    }),
+    [user, loading, error]
+  );
+
+  return (
+    <AuthContext.Provider value={memoedValue}
     >
       {/* only load the children when you are not loading. to remove the delay. */}
       { !loadingInitial && children}
